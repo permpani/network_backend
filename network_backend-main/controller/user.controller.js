@@ -122,13 +122,3 @@ export const getAllChat = async (req, res, next) => {
   }
 };
 
-export const getCSRF = async (req, res, next) => {
-  const token = csrfProtection.create(secret);
-  res.cookie("csrf-token", token, {
-    httpOnly: true,
-    sameSite: "none",
-    secure: true,
-    path: "/",
-  });
-  res.json({token});
-};
