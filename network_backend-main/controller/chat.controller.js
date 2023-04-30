@@ -5,8 +5,8 @@ import User from "../models/user.model.js";
 
 export const createChat = async (req, res, next) => {
   try {
-    const {allowedUsers,nameChat} = req.body;
-    const chat = new Chat({nameChat, allowedUsers});
+    const {allowedUsers,nameChat,typeRoom} = req.body;
+    const chat = new Chat({nameChat, allowedUsers, typeRoom});
     await chat.save();
     // Add the new room to all allowed users' chatRooms
     await User.updateMany(
@@ -19,6 +19,42 @@ export const createChat = async (req, res, next) => {
   }
 };
 
+// getchat คนที่เคยคุยด้วยกับกลุ่มที่join
+export const getChatRoomUserHave = async (req, res, next) => {
+  const {user_id, typeRoom} = req.body;
+  try{
+    const chats = await Chat.find({
+      allowedUsers: { $in: [user_id] },
+      typeRoom: typeRoom,
+    });
+    res.send(chats);
+  }
+  catch (error) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+// getchat ที่ต้องการจะเข้าไปอ่าน ต้องเช็คก่อนว่ามีแชทนั้นยัง เช่น จะdm ไปหาคนที่ไม่เคยคุย
+export const getChatRoom = async (req, res, next) => {
+  const {user_id, other_id, typeRoom} = req.body;
+  try{
+    let chat = await Chat.find({
+      allowedUsers: { $in: [user_id, other_id] },
+      typeRoom: typeRoom,
+    });
+    if(chat){
+      return res.send(chat);
+    }
+    chat = new Chat({other_id, user_id, typeRoom});
+    await chat.save();
+    return res.send(chat);
+  }
+  catch (error) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+//getAllChat ใช้ในหน้าว่ามีแชทกลุ่มไหนบ้าง
 export const showGroupMember = async (req, res, next) => {
   const chatId = req.params.chatId;
   try {
@@ -46,6 +82,22 @@ export const getAllChatRoomInServer = async (req, res, next) => {
   }
 };
 
+//check ว่าอยู่ในchatกลุ่ม นั้นยัง
+export const haveChat = async (req, res, next) => {
+  const {chat_id} = req.body;
+  try{
+    let chat = await Chat.findById(chat_id);
+    if(chat){
+      return res.send("yes");
+    }
+    res.send("no");
+  }
+  catch (error) {
+    res.status(500).json({message: error.message});
+  }
+}
+
+//join chat group
 export const joinChat = async (req, res, next) => {
   const user_id = req.header.user_id;
   const chat_id = req.header.chat_id;
