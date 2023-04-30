@@ -19,6 +19,21 @@ export const createChat = async (req, res, next) => {
   }
 };
 
+export const showGroupMember = async (req, res, next) => {
+  const chatId = req.params.chatId;
+  try {
+    const chat = await Chat.findById(chatId).populate({
+      path: "allowedUsers"
+    });
+    if (!chat) {
+      return res.status(404).json({error: "Chat not found"});
+    }
+    const usernames = chat.allowedUsers.map(user => user.username);
+    return res.status(200).json({ usernames });
+  } catch (error) {
+    res.status(500).json({error: "An error occurred while getting chat rooms"});
+  }
+};  
 export const getAllChatRoomInServer = async (req, res, next) => {
   const typeRoom = req.query.typeRoom;
   let condition = {};
