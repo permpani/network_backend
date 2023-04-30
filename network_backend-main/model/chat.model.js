@@ -4,6 +4,7 @@ const chatRoomSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      default: "",
     },
     allowedUsers: [
       {
