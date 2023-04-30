@@ -54,7 +54,6 @@ export const getChatRoom = async (req, res, next) => {
   }
 }
 
-//getAllChat ใช้ในหน้าว่ามีแชทกลุ่มไหนบ้าง
 export const showGroupMember = async (req, res, next) => {
   const chatId = req.params.chatId;
   try {
@@ -69,7 +68,9 @@ export const showGroupMember = async (req, res, next) => {
   } catch (error) {
     res.status(500).json({error: "An error occurred while getting chat rooms"});
   }
-};  
+};
+
+//getAllChat ใช้ในหน้าว่ามีแชทกลุ่มไหนบ้าง
 export const getAllChatRoomInServer = async (req, res, next) => {
   const typeRoom = req.query.typeRoom;
   let condition = {};
