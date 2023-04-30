@@ -12,13 +12,34 @@ dotenv.config({path: ".env"});
 const secret = process.env.JWT_SECRET;
 const csrfProtection = new csrf();
 
-export const createUser = (req, res, next) => {
-  const user = new User();
-  user.username = req.body.user.username;
-  user.email = req.body.user.email;
-  user.setPassword(req.body.user.password);
+// export const createUser = (req, res, next) => {
+//   const user = new User();
+//   user.username = req.body.user.username;
 
-  user
+//   user
+//     .save()
+//     .then(function () {
+//       return res.json({message: "Create account successfully"});
+//     })
+//     .catch(function (error) {
+//       if (error.code === 11000) {
+//         console.log(error);
+//         return res
+//           .status(400)
+//           .send({error: "Username or E-mail already exists"});
+//       }
+//       next(error);
+//     });
+// };
+
+export const localLogin = async (req, res, next) => {
+  passport.use(localStrategy);
+  const user = await User.findOne({ username: req.body.username }).exec();
+  if(!user) {
+    const user = new User();
+    user.username = req.body.user.username;
+
+    user
     .save()
     .then(function () {
       return res.json({message: "Create account successfully"});
@@ -32,15 +53,6 @@ export const createUser = (req, res, next) => {
       }
       next(error);
     });
-};
-
-export const localLogin = (req, res, next) => {
-  passport.use(localStrategy);
-  if (!req.body.user.email) {
-    return res.status(422).json({errors: {email: "can't be blank"}});
-  }
-  if (!req.body.user.password) {
-    return res.status(422).json({errors: {password: "can't be blank"}});
   }
   passport.authenticate("local", function (err, user, info) {
     if (err) {
