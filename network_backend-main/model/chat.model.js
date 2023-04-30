@@ -4,6 +4,7 @@ const chatRoomSchema = new mongoose.Schema(
   {
     name: {
       type: String,
+      default: "",
     },
     allowedUsers: [
       {
@@ -11,6 +12,10 @@ const chatRoomSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    typeRoom: {
+      type: String,
+      default: "",
+    },
   },
   {timestamps: true}
 );
