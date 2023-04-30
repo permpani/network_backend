@@ -19,9 +19,12 @@ export const createChat = async (req, res, next) => {
   }
 };
 
-export const getAllChatInServer = async (req, res, next) => {
+export const getAllChatRoomInServer = async (req, res, next) => {
+  const typeRoom = req.query.typeRoom;
+  let condition = {};
+  condition.typeRoom = typeRoom;
   try {
-    let chats = await Chat.find();
+    let chats = await Chat.find(condition);
     res.send(chats);
   } catch (error) {
     res.status(500).json({message: error.message});

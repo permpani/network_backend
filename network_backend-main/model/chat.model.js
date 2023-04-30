@@ -12,6 +12,10 @@ const chatRoomSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    typeRoom: {
+      type: String,
+      default: "",
+    },
   },
   {timestamps: true}
 );
